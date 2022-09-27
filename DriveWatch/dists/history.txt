@@ -1,2 +1,5 @@
+2022/09/27 v0.0.2
+Shows all drives
+
 2022/09/27 v0.0.1
 Basic part complete

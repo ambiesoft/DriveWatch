@@ -6,6 +6,9 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include "../../lsMisc/GetVolumeInfo.h"
+#include "../../lsMisc/stdosd/stdosd.h"
+
 #include "framework.h"
 #include "DriveWatch.h"
 #include "AboutDlg.h"
@@ -18,6 +21,7 @@
 
 using namespace std;
 using namespace Ambiesoft;
+using namespace Ambiesoft::stdosd;
 
 CDriveWatchDlg::CDriveWatchDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DRIVEWATCH_DIALOG, pParent)
@@ -77,31 +81,45 @@ BOOL CDriveWatchDlg::OnInitDialog()
 }
 void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	ULARGE_INTEGER userFreeSpace;
-	ULARGE_INTEGER userTotal;
-	ULARGE_INTEGER freeSpace;
-	if (!GetDiskFreeSpaceEx(L"C:\\",
-		&userFreeSpace,
-		&userTotal,
-		&freeSpace))
+	std::vector<VolumeInfo> volumes;
+	GetVolumeInfo(&volumes);
+	wstringstream allText;
+	wstringstream allTitle;
+	for (auto&& volume : volumes)
 	{
-		m_strFreeSpace = L"Failed to get free space";
-	}
-	else
-	{
-		auto percent = (100.0 * userFreeSpace.QuadPart / userTotal.QuadPart);
-		wstringstream wss;
-		wss << FormatSizeof(userFreeSpace.QuadPart) << L" / " <<
-			FormatSizeof(userTotal.QuadPart) << L" (" <<
-			setprecision(3) << 
-			percent << L"% free)";
-		m_strFreeSpace = wss.str().c_str();
+		if (volume.paths.empty())
+			continue;
+		ULARGE_INTEGER userFreeSpace;
+		ULARGE_INTEGER userTotal;
+		ULARGE_INTEGER freeSpace;
+		allText << volume.paths[0].c_str() << L" ";
 
-		wstringstream wssTitle;
-		wssTitle << setprecision(3) << percent << L"%" <<
-			L" | " << AfxGetAppName();
-		SetWindowText(wssTitle.str().c_str());
+		if (!GetDiskFreeSpaceEx(volume.paths[0].c_str(),
+			&userFreeSpace,
+			&userTotal,
+			&freeSpace))
+		{
+			allText << L"Failed to get free space";
+		}
+		else
+		{
+			auto percent = (100.0 * userFreeSpace.QuadPart / userTotal.QuadPart);
+			wstringstream wss;
+			wss << FormatSizeof(userFreeSpace.QuadPart) << L" / " <<
+				FormatSizeof(userTotal.QuadPart) << L" (" <<
+				setprecision(3) <<
+				percent << L"% free)";
+			allText << wss.str();
+
+			wstringstream wssTitle;
+			wssTitle << setprecision(3) << percent << L"%" <<
+				L" | " << AfxGetAppName();
+			allTitle << wssTitle.str();
+		}
+		allText << L"\r\n";
 	}
+	SetWindowText(allTitle.str().c_str());
+	m_strFreeSpace = stdTrimEnd(allText.str()).c_str();
 	UpdateData(FALSE);
 	return;
 
