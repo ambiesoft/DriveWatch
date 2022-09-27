@@ -191,6 +191,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\lsMisc\FormatSizeof.h" />
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="DriveWatch.h" />
     <ClInclude Include="DriveWatchDlg.h" />
@@ -200,6 +201,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lsMisc\FormatSizeof.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="DriveWatch.cpp" />
     <ClCompile Include="DriveWatchDlg.cpp" />
@@ -218,6 +225,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\DriveWatch.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="dists\history.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,6 +5,7 @@
 #include "pch.h"
 #include <sstream>
 #include <string>
+#include <iomanip>
 #include "framework.h"
 #include "DriveWatch.h"
 #include "AboutDlg.h"
@@ -16,6 +17,7 @@
 #endif
 
 using namespace std;
+using namespace Ambiesoft;
 
 CDriveWatchDlg::CDriveWatchDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DRIVEWATCH_DIALOG, pParent)
@@ -69,8 +71,8 @@ BOOL CDriveWatchDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	SetTimer(1, 1000, nullptr);
-
+	SetTimer(1, 10000, nullptr);
+	OnTimer(1);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
@@ -87,10 +89,18 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 	else
 	{
+		auto percent = (100.0 * userFreeSpace.QuadPart / userTotal.QuadPart);
 		wstringstream wss;
-		wss << userFreeSpace.QuadPart << L" " <<
-			userTotal.QuadPart;
+		wss << FormatSizeof(userFreeSpace.QuadPart) << L" / " <<
+			FormatSizeof(userTotal.QuadPart) << L" (" <<
+			setprecision(3) << 
+			percent << L"% free)";
 		m_strFreeSpace = wss.str().c_str();
+
+		wstringstream wssTitle;
+		wssTitle << setprecision(3) << percent << L"%" <<
+			L" | " << AfxGetAppName();
+		SetWindowText(wssTitle.str().c_str());
 	}
 	UpdateData(FALSE);
 	return;
