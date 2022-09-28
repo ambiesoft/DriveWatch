@@ -13,5 +13,6 @@
 #include <sstream>
 
 #include "../../lsMisc/FormatSizeof.h"
+#include "../../lsMisc/CResizableDialog/ResizableDialog.h"
 
 #endif //PCH_H

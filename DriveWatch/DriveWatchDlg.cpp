@@ -24,7 +24,7 @@ using namespace Ambiesoft;
 using namespace Ambiesoft::stdosd;
 
 CDriveWatchDlg::CDriveWatchDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_DRIVEWATCH_DIALOG, pParent)
+	: ParentClass(IDD_DRIVEWATCH_DIALOG, pParent)
 	, m_strFreeSpace(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -32,11 +32,11 @@ CDriveWatchDlg::CDriveWatchDlg(CWnd* pParent /*=nullptr*/)
 
 void CDriveWatchDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	ParentClass::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_STATIC_FREESPACE, m_strFreeSpace);
 }
 
-BEGIN_MESSAGE_MAP(CDriveWatchDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CDriveWatchDlg, ParentClass)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -48,7 +48,7 @@ END_MESSAGE_MAP()
 
 BOOL CDriveWatchDlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+	ParentClass::OnInitDialog();
 
 	// Add "About..." menu item to system menu.
 
@@ -74,6 +74,8 @@ BOOL CDriveWatchDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	AddAnchor(IDC_STATIC_FREESPACE, TOP_LEFT, BOTTOM_RIGHT);
 
 	SetTimer(1, 10000, nullptr);
 	OnTimer(1);
@@ -123,7 +125,7 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 	UpdateData(FALSE);
 	return;
 
-	CDialogEx::OnTimer(nIDEvent);
+	ParentClass::OnTimer(nIDEvent);
 }
 
 void CDriveWatchDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -135,7 +137,7 @@ void CDriveWatchDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 	else
 	{
-		CDialogEx::OnSysCommand(nID, lParam);
+		ParentClass::OnSysCommand(nID, lParam);
 	}
 }
 
@@ -164,7 +166,7 @@ void CDriveWatchDlg::OnPaint()
 	}
 	else
 	{
-		CDialogEx::OnPaint();
+		ParentClass::OnPaint();
 	}
 }
 

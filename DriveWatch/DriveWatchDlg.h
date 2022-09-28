@@ -6,8 +6,10 @@
 
 
 // CDriveWatchDlg dialog
-class CDriveWatchDlg : public CDialogEx
+class CDriveWatchDlg : public CResizableDialog
 {
+	using ParentClass = CResizableDialog;
+
 // Construction
 public:
 	CDriveWatchDlg(CWnd* pParent = nullptr);	// standard constructor
