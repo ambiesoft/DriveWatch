@@ -14,5 +14,9 @@
 
 #include "../../lsMisc/FormatSizeof.h"
 #include "../../lsMisc/CResizableDialog/ResizableDialog.h"
+#include "../../profile/cpp/Profile/include/ambiesoft.profile.h"
+#include "../../lsMisc/stdosd/stdosd.h"
+#include "../../lsMisc/SaveWindowLocation.h"
 
+#define I18N(s) s
 #endif //PCH_H

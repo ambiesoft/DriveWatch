@@ -41,10 +41,14 @@ BEGIN_MESSAGE_MAP(CDriveWatchDlg, ParentClass)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
 // CDriveWatchDlg message handlers
+
+
+
 
 BOOL CDriveWatchDlg::OnInitDialog()
 {
@@ -76,6 +80,8 @@ BOOL CDriveWatchDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	AddAnchor(IDC_STATIC_FREESPACE, TOP_LEFT, BOTTOM_RIGHT);
+
+	LoadWindowLocation(*this, theApp.GetIniPath().c_str());
 
 	SetTimer(1, 10000, nullptr);
 	OnTimer(1);
@@ -179,3 +185,11 @@ HCURSOR CDriveWatchDlg::OnQueryDragIcon()
 
 
 
+void CDriveWatchDlg::OnDestroy()
+{
+	if (!SaveWindowLocation(*this, theApp.GetIniPath().c_str()))
+	{
+		AfxMessageBox(I18N(L"Failed to save to ini file"));
+	}
+	ParentClass::OnDestroy();
+}

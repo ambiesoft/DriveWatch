@@ -25,6 +25,7 @@ public:
 	virtual BOOL InitInstance();
 
 // Implementation
+	std::wstring GetIniPath() const;
 
 	DECLARE_MESSAGE_MAP()
 };

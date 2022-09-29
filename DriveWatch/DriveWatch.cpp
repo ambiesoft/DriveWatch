@@ -11,12 +11,15 @@
 #define new DEBUG_NEW
 #endif
 
+using namespace Ambiesoft;
+using namespace Ambiesoft::stdosd;
 
 // CDriveWatchApp
 
 BEGIN_MESSAGE_MAP(CDriveWatchApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
+
 
 
 // CDriveWatchApp construction
@@ -100,5 +103,12 @@ BOOL CDriveWatchApp::InitInstance()
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;
+}
+
+std::wstring CDriveWatchApp::GetIniPath() const
+{
+	return stdCombinePath(
+		stdGetParentDirectory(stdGetModuleFileName()),
+		stdGetFileNameWitoutExtension(stdGetModuleFileName()) + L".ini");
 }
 
