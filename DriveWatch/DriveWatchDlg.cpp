@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP(CDriveWatchDlg, ParentClass)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
+	ON_WM_QUERYENDSESSION()
 END_MESSAGE_MAP()
 
 
@@ -192,4 +193,14 @@ void CDriveWatchDlg::OnDestroy()
 		AfxMessageBox(I18N(L"Failed to save to ini file"));
 	}
 	ParentClass::OnDestroy();
+}
+
+
+BOOL CDriveWatchDlg::OnQueryEndSession()
+{
+	// CDialog::OnQueryEndSession() returns FALSE if the restart manager
+	// is not activated
+	//if (!CResizableDialog::OnQueryEndSession())
+	//	return FALSE;
+	return TRUE;
 }

@@ -37,4 +37,5 @@ public:
 	CString m_strFreeSpace;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
+	afx_msg BOOL OnQueryEndSession();
 };
