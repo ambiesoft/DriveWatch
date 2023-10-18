@@ -9,9 +9,14 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+
 #include <string>
 #include <sstream>
+#include <string>
+#include <iomanip>
 
+#include "../../lsMisc/GetVolumeInfo.h"
+#include "../../lsMisc/stdosd/stdosd.h"
 #include "../../lsMisc/FormatSizeof.h"
 #include "../../lsMisc/CResizableDialog/ResizableDialog.h"
 #include "../../profile/cpp/Profile/include/ambiesoft.profile.h"

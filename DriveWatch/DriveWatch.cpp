@@ -3,6 +3,9 @@
 //
 
 #include "pch.h"
+
+#include "../../lsMisc/CommandLineParser.h"
+
 #include "framework.h"
 #include "DriveWatch.h"
 #include "DriveWatchDlg.h"
@@ -52,7 +55,6 @@ BOOL CDriveWatchApp::InitInstance()
 
 	CWinApp::InitInstance();
 
-
 	AfxEnableControlContainer();
 
 	// Create the shell manager, in case the dialog contains
@@ -62,14 +64,134 @@ BOOL CDriveWatchApp::InitInstance()
 	// Activate "Windows Native" visual manager for enabling themes in MFC controls
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	// of your final executable, you should remove from the following
-	// the specific initialization routines you do not need
-	// Change the registry key under which our settings are stored
-	// TODO: You should modify this string to be something appropriate
-	// such as the name of your company or organization
-	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+	// keep m_pszProfileName active
+	free((void*)m_pszProfileName);
+	m_pszProfileName = _tcsdup(GetIniPath().c_str());
+
+	{
+		CCommandLineParser parser(
+			I18N(L"Monitor free drive space"),
+			AfxGetAppName());
+		parser.setStrict();
+
+		bool bHelp = false;
+		std::wstring strLaunchIf;
+
+		parser.AddOptionRange({ L"-h",L"/h",L"/?",L"--help" },
+			ArgCount::ArgCount_Zero,
+			&bHelp,
+			ArgEncodingFlags_Default,
+			I18N(L"Shows help"));
+
+		parser.AddOption(L"--launch-if",
+			ArgCount::ArgCount_One,
+			&strLaunchIf,
+			ArgEncodingFlags_Default,
+			I18N(L"Start application if the free space is in specified condition met. ex) --launch-if <10G"));
+
+		try
+		{
+			parser.Parse();
+		}
+		catch (CCommandLineParserException& ex)
+		{
+			AfxMessageBox(ex.wwhat().c_str());
+			return FALSE;
+		}
+
+		if (bHelp)
+		{
+			MessageBox(nullptr,
+				parser.getHelpMessage().c_str(),
+				AfxGetAppName(),
+				MB_ICONINFORMATION);
+			return FALSE;
+		}
+
+		if (!strLaunchIf.empty())
+		{
+			enum class LAUNCH_IF_INEQUALITY {
+				UNINITIALIZED,
+				LESS,
+				GREATER,
+			} iniequality = LAUNCH_IF_INEQUALITY::UNINITIALIZED;
+
+			// find first letter
+			switch (strLaunchIf[0])
+			{
+			case L'<':
+				iniequality = LAUNCH_IF_INEQUALITY::LESS;
+				break;
+			case L'>':
+				iniequality = LAUNCH_IF_INEQUALITY::GREATER;
+				break;
+			default:
+				AfxMessageBox(I18N(L"First letter of the argument of '--launch-if' must be '<' or '>'."));
+				return FALSE;
+			}
+
+			std::wstring arg = strLaunchIf.substr(1);
+			if (arg.empty())
+			{
+				AfxMessageBox(I18N(L"The argument of '--launch-if' is empty."));
+				return FALSE;
+			}
+			int nSign;
+			int64_t threadhold;
+			stdGetUnittedSize(arg, &nSign, &threadhold);// stdFromString<int64_t>(arg.c_str());
+			if (threadhold < 0)
+			{
+				AfxMessageBox(I18N(L"The argument of '--launch-if' is minus."));
+				return FALSE;
+			}
+
+			auto fnDecideLaunch = [&]() {
+				do {
+					std::vector<VolumeInfo> volumes;
+					GetVolumeInfo(&volumes);
+					for (auto&& volume : volumes)
+					{
+						if (volume.paths.empty())
+							continue;
+						ULARGE_INTEGER userFreeSpace;
+						ULARGE_INTEGER userTotal;
+						ULARGE_INTEGER freeSpace;
+
+						if (GetDiskFreeSpaceEx(volume.paths[0].c_str(),
+							&userFreeSpace,
+							&userTotal,
+							&freeSpace))
+						{
+							switch (iniequality)
+							{
+							case LAUNCH_IF_INEQUALITY::LESS:
+								if (freeSpace.QuadPart < (ULONGLONG)threadhold)
+								{
+									// Go launch
+									return true;
+								}
+								continue;
+
+							case LAUNCH_IF_INEQUALITY::GREATER:
+								if (freeSpace.QuadPart > (ULONGLONG)threadhold)
+								{
+									// Go launch
+									return true;
+								}
+								continue;
+							default:
+								ASSERT(false);
+							}
+						}
+					}
+					return false;
+				} while (false);
+				};
+			
+			if (!fnDecideLaunch())
+				return FALSE;
+		}
+	}
 
 	CDriveWatchDlg dlg;
 	m_pMainWnd = &dlg;
@@ -109,6 +231,6 @@ std::wstring CDriveWatchApp::GetIniPath() const
 {
 	return stdCombinePath(
 		stdGetParentDirectory(stdGetModuleFileName()),
-		stdGetFileNameWitoutExtension(stdGetModuleFileName()) + L".ini");
+		stdGetFileNameWithoutExtension(stdGetModuleFileName()) + L".ini");
 }
 
