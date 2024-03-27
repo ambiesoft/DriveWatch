@@ -22,6 +22,7 @@
 #include "../../profile/cpp/Profile/include/ambiesoft.profile.h"
 #include "../../lsMisc/stdosd/stdosd.h"
 #include "../../lsMisc/SaveWindowLocation.h"
+#include "../../lsMisc/IsDuplicateInstance.h"
 
 #define I18N(s) s
 #endif //PCH_H

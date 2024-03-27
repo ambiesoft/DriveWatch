@@ -43,6 +43,16 @@ CDriveWatchApp theApp;
 
 BOOL CDriveWatchApp::InitInstance()
 {
+	if (IsDuplicateInstance(DRIVEWATCH_MUTEX_NAME))
+	{
+		HWND hWndPrev = (HWND)GetDuplicateInstanceData(DRIVEWATCH_MUTEX_NAME);
+		if (IsWindow(hWndPrev))
+		{
+			SetForegroundWindow(hWndPrev);
+		}
+		return FALSE;
+	}
+
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.

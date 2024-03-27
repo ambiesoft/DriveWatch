@@ -10,6 +10,7 @@
 
 #include "resource.h"		// main symbols
 
+#define DRIVEWATCH_MUTEX_NAME L"DriveWatchMutex"
 
 // CDriveWatchApp:
 // See DriveWatch.cpp for the implementation of this class

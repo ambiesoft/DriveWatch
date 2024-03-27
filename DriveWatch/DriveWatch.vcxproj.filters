@@ -111,6 +111,9 @@
     <ClInclude Include="..\..\lsMisc\UTF16toUTF8.h">
       <Filter>1 Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\lsMisc\IsDuplicateInstance.h">
+      <Filter>1 Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriveWatch.cpp">
@@ -180,6 +183,9 @@
       <Filter>2 Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\lsMisc\UTF16toUTF8.cpp">
+      <Filter>2 Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\IsDuplicateInstance.cpp">
       <Filter>2 Source Files</Filter>
     </ClCompile>
   </ItemGroup>
