@@ -1,3 +1,6 @@
 *.rc
 *.ico
 *.rc2
+
+DriveWatch/resource.h
+
