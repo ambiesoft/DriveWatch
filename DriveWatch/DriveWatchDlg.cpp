@@ -42,10 +42,6 @@ END_MESSAGE_MAP()
 
 
 // CDriveWatchDlg message handlers
-
-
-
-
 BOOL CDriveWatchDlg::OnInitDialog()
 {
 	ParentClass::OnInitDialog();
@@ -70,6 +66,7 @@ BOOL CDriveWatchDlg::OnInitDialog()
 		{
 			pSysMenu->AppendMenu(MF_SEPARATOR);
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			pSysMenu->AppendMenu(MF_STRING, IDM_TOPMOST, I18N(L"&Top most"));
 		}
 	}
 
@@ -140,6 +137,10 @@ void CDriveWatchDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
 	}
+	else if (nID == IDM_TOPMOST)
+	{
+		SetWindowTopMost(m_hWnd, !IsWindowTopMost(m_hWnd));
+	}
 	else
 	{
 		ParentClass::OnSysCommand(nID, lParam);
@@ -202,3 +203,5 @@ BOOL CDriveWatchDlg::OnQueryEndSession()
 	//	return FALSE;
 	return TRUE;
 }
+
+

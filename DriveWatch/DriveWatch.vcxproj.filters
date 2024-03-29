@@ -114,6 +114,12 @@
     <ClInclude Include="..\..\lsMisc\IsDuplicateInstance.h">
       <Filter>1 Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\lsMisc\SetWindowTopMost.h">
+      <Filter>1 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lsMisc\GetVersionStringFromResource.h">
+      <Filter>1 Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriveWatch.cpp">
@@ -131,61 +137,67 @@
     <ClCompile Include="..\..\lsMisc\FormatSizeof.cpp">
       <Filter>2 Source Files\lsMisc</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lsMisc\GetVolumeInfo.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\stdosd\stdosd_win.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\stdosd\stdosd.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableDialog.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableFormView.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableGrip.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableLayout.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableMinMax.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizablePage.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizablePageEx.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableSheet.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableSheetEx.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableState.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\CResizableDialog\StdAfxResizableDialog.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\lsMisc\SaveWindowLocation.cpp">
-      <Filter>2 Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\lsMisc\CommandLineParser.cpp">
       <Filter>2 Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lsMisc\UrlEncode.cpp">
-      <Filter>2 Source Files</Filter>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableDialog.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lsMisc\UTF16toUTF8.cpp">
-      <Filter>2 Source Files</Filter>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableFormView.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableGrip.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableLayout.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableMinMax.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizablePage.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizablePageEx.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableSheet.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableSheetEx.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\ResizableState.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
     </ClCompile>
     <ClCompile Include="..\..\lsMisc\IsDuplicateInstance.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\GetVolumeInfo.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\SaveWindowLocation.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CResizableDialog\StdAfxResizableDialog.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\stdosd\stdosd.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\stdosd\stdosd_win.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\UrlEncode.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\UTF16toUTF8.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\SetWindowTopMost.cpp">
+      <Filter>2 Source Files\lsMisc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\GetVersionStringFromResource.cpp">
       <Filter>2 Source Files</Filter>
     </ClCompile>
   </ItemGroup>

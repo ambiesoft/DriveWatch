@@ -15,4 +15,6 @@ public:
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	CString m_strAppVersion;
 };

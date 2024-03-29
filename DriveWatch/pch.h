@@ -23,6 +23,8 @@
 #include "../../lsMisc/stdosd/stdosd.h"
 #include "../../lsMisc/SaveWindowLocation.h"
 #include "../../lsMisc/IsDuplicateInstance.h"
+#include "../../lsMisc/SetWindowTopMost.h"
+#include "../../lsMisc/GetVersionStringFromResource.h"
 
 #define I18N(s) s
 #endif //PCH_H
