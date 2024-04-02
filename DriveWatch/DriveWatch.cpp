@@ -48,7 +48,7 @@ BOOL CDriveWatchApp::InitInstance()
 		HWND hWndPrev = (HWND)GetDuplicateInstanceData(DRIVEWATCH_MUTEX_NAME);
 		if (IsWindow(hWndPrev))
 		{
-			SetForegroundWindow(hWndPrev);
+			RestoreOrForegroundWindow(hWndPrev);
 		}
 		return FALSE;
 	}

@@ -46,7 +46,6 @@ BOOL CDriveWatchDlg::OnInitDialog()
 {
 	ParentClass::OnInitDialog();
 
-
 	SetDuplicateInstanceData(DRIVEWATCH_MUTEX_NAME, (void*)m_hWnd);
 
 	// Add "About..." menu item to system menu.
