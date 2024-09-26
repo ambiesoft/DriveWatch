@@ -92,6 +92,29 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		if (volume.paths.empty())
 			continue;
+
+		bool bSkip = false;
+		switch (GetDriveType(volume.paths[0].c_str()))
+		{
+		case DRIVE_UNKNOWN:
+			break;
+		case DRIVE_NO_ROOT_DIR:
+			break;
+		case DRIVE_REMOVABLE:
+			break;
+		case DRIVE_FIXED:
+			break;
+		case DRIVE_REMOTE:
+			break;
+		case DRIVE_CDROM:
+			bSkip = true;
+			break;
+		case DRIVE_RAMDISK:
+			break;
+		}
+		if (bSkip)
+			continue;
+
 		ULARGE_INTEGER userFreeSpace;
 		ULARGE_INTEGER userTotal;
 		ULARGE_INTEGER freeSpace;

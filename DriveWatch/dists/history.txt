@@ -1,3 +1,5 @@
+Skip CDROM_DRIVE
+
 2024/04/02 v0.0.9
 Restore the window if iconic
 
