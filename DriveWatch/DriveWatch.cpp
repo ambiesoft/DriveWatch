@@ -78,6 +78,12 @@ BOOL CDriveWatchApp::InitInstance()
 	free((void*)m_pszProfileName);
 	m_pszProfileName = _tcsdup(GetIniPath().c_str());
 
+	bool bSkipRemovable = false;
+	bool bSkipFixed = false;
+	bool bSkipRemote = false;
+	bool bSkipCdrom = false;
+	bool bSkipRamDisk = false;
+
 	{
 		CCommandLineParser parser(
 			I18N(L"Monitor free drive space"),
@@ -99,6 +105,32 @@ BOOL CDriveWatchApp::InitInstance()
 			ArgEncodingFlags_Default,
 			I18N(L"Start application if the free space is in specified condition met. ex) --launch-if <10G"));
 
+		parser.AddOption(L"--skip-removable",
+			ArgCount::ArgCount_Zero,
+			&bSkipRemovable,
+			ArgEncodingFlags_Default,
+			I18N(L"Skip Removable Drive"));
+		parser.AddOption(L"--skip-fixed",
+			ArgCount::ArgCount_Zero,
+			&bSkipFixed,
+			ArgEncodingFlags_Default,
+			I18N(L"Skip Fixed Drive"));
+		parser.AddOption(L"--skip-remote",
+			ArgCount::ArgCount_Zero,
+			&bSkipRemote,
+			ArgEncodingFlags_Default,
+			I18N(L"Skip Remote Drive"));
+		parser.AddOption(L"--skip-cdrom",
+			ArgCount::ArgCount_Zero,
+			&bSkipCdrom,
+			ArgEncodingFlags_Default,
+			I18N(L"Skip CDROM"));
+		parser.AddOption(L"--skip-ramdisk",
+			ArgCount::ArgCount_Zero,
+			&bSkipRamDisk,
+			ArgEncodingFlags_Default,
+			I18N(L"Skip Ramdisk Drive"));
+		
 		try
 		{
 			parser.Parse();
@@ -106,6 +138,12 @@ BOOL CDriveWatchApp::InitInstance()
 		catch (CCommandLineParserException& ex)
 		{
 			AfxMessageBox(ex.wwhat().c_str());
+			return FALSE;
+		}
+
+		if (parser.hadUnknownOption())
+		{
+			AfxMessageBox((I18N(L"Unknown command:") + parser.getFirstUnknowOptionString()).c_str());
 			return FALSE;
 		}
 
@@ -203,7 +241,12 @@ BOOL CDriveWatchApp::InitInstance()
 		}
 	}
 
-	CDriveWatchDlg dlg;
+	CDriveWatchDlg dlg(
+		bSkipRemovable,
+		bSkipFixed,
+		bSkipRemote,
+		bSkipCdrom,
+		bSkipRamDisk);
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

@@ -18,9 +18,19 @@ using namespace std;
 using namespace Ambiesoft;
 using namespace Ambiesoft::stdosd;
 
-CDriveWatchDlg::CDriveWatchDlg(CWnd* pParent /*=nullptr*/)
-	: ParentClass(IDD_DRIVEWATCH_DIALOG, pParent)
-	, m_strFreeSpace(_T(""))
+CDriveWatchDlg::CDriveWatchDlg(
+	bool bSkipRemovable,
+	bool bSkipFixed,
+	bool bSkipRemote,
+	bool bSkipCdrom,
+	bool bSkipRamDisk)
+	: ParentClass(IDD_DRIVEWATCH_DIALOG, nullptr),
+	bSkipRemovable_(bSkipRemovable),
+	bSkipFixed_(bSkipFixed),
+	bSkipRemote_(bSkipRemote),
+	bSkipCdrom_(bSkipCdrom),
+	bSkipRamDisk_(bSkipRamDisk),
+	m_strFreeSpace(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -94,27 +104,48 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 			continue;
 
 		bool bSkip = false;
-		switch (GetDriveType(volume.paths[0].c_str()))
+		if (bSkipRemovable_ ||
+			bSkipFixed_ ||
+			bSkipRemote_ ||
+			bSkipCdrom_ ||
+			bSkipRamDisk_)
 		{
-		case DRIVE_UNKNOWN:
-			break;
-		case DRIVE_NO_ROOT_DIR:
-			break;
-		case DRIVE_REMOVABLE:
-			break;
-		case DRIVE_FIXED:
-			break;
-		case DRIVE_REMOTE:
-			break;
-		case DRIVE_CDROM:
-			bSkip = true;
-			break;
-		case DRIVE_RAMDISK:
-			break;
+			switch (GetDriveType(volume.paths[0].c_str()))
+			{
+			case DRIVE_UNKNOWN:
+				ASSERT(false);
+				break;
+			case DRIVE_NO_ROOT_DIR:
+				ASSERT(false);
+				break;
+			case DRIVE_REMOVABLE:
+				if (bSkipRemovable_)
+					bSkip = true;
+				break;
+			case DRIVE_FIXED:
+				if (bSkipFixed_)
+					bSkip = true;
+				break;
+			case DRIVE_REMOTE:
+				if (bSkipRemote_)
+					bSkip = true;
+				break;
+			case DRIVE_CDROM:
+				if (bSkipCdrom_)
+					bSkip = true;
+				bSkip = true;
+				break;
+			case DRIVE_RAMDISK:
+				if (bSkipRamDisk_)
+					bSkip = true;
+				break;
+			default:
+				ASSERT(false);
+				break;
+			}
+			if (bSkip)
+				continue;
 		}
-		if (bSkip)
-			continue;
-
 		ULARGE_INTEGER userFreeSpace;
 		ULARGE_INTEGER userTotal;
 		ULARGE_INTEGER freeSpace;

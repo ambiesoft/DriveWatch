@@ -9,21 +9,30 @@
 class CDriveWatchDlg : public CResizableDialog
 {
 	using ParentClass = CResizableDialog;
-
-// Construction
+	bool bSkipRemovable_;
+	bool bSkipFixed_;
+	bool bSkipRemote_;
+	bool bSkipCdrom_;
+	bool bSkipRamDisk_;
+	// Construction
 public:
-	CDriveWatchDlg(CWnd* pParent = nullptr);	// standard constructor
+	CDriveWatchDlg(
+		bool bSkipRemovable,
+		bool bSkipFixed,
+		bool bSkipRemote,
+		bool bSkipCdrom,
+		bool bSkipRamDisk);
 
-// Dialog Data
+	// Dialog Data
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DRIVEWATCH_DIALOG };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
 
-// Implementation
+	// Implementation
 protected:
 	HICON m_hIcon;
 
