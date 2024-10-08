@@ -96,8 +96,8 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	std::vector<VolumeInfo> volumes;
 	GetVolumeInfo(&volumes);
-	wstringstream allText;
-	wstringstream allTitle;
+	vector<wstring> lines;
+	vector<wstring> titles;
 	for (auto&& volume : volumes)
 	{
 		if (volume.paths.empty())
@@ -146,17 +146,21 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 			if (bSkip)
 				continue;
 		}
+
+		wstringstream line;
+		wstringstream title;
+
 		ULARGE_INTEGER userFreeSpace;
 		ULARGE_INTEGER userTotal;
 		ULARGE_INTEGER freeSpace;
-		allText << volume.paths[0].c_str() << L" ";
+		line << volume.paths[0].c_str() << L" ";
 
 		if (!GetDiskFreeSpaceEx(volume.paths[0].c_str(),
 			&userFreeSpace,
 			&userTotal,
 			&freeSpace))
 		{
-			allText << L"Failed to get free space";
+			line << L"Failed to get free space";
 		}
 		else
 		{
@@ -166,17 +170,21 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 				FormatSizeof(userTotal.QuadPart) << L" (" <<
 				setprecision(3) <<
 				percent << L"% free)";
-			allText << wss.str();
+			line << wss.str();
 
 			wstringstream wssTitle;
-			wssTitle << setprecision(3) << percent << L"%" <<
-				L" | " << AfxGetAppName();
-			allTitle << wssTitle.str();
+			wssTitle << setprecision(3) << percent << L"%";
+			title << wssTitle.str();
 		}
-		allText << L"\r\n";
+
+		lines.push_back(line.str());
+		titles.push_back(title.str());
 	}
-	SetWindowText(allTitle.str().c_str());
-	m_strFreeSpace = stdTrimEnd(allText.str()).c_str();
+	titles.push_back(AfxGetAppName());
+	SetWindowText(stdJoinStrings(titles, L" | ", L"", L"").c_str());
+
+	std::sort(lines.begin(), lines.end());
+	m_strFreeSpace = stdTrimEnd(stdJoinStrings(lines,L"\r\n", L"", L"")).c_str();
 	UpdateData(FALSE);
 	return;
 
