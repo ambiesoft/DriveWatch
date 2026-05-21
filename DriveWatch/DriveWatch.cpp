@@ -33,14 +33,121 @@ CDriveWatchApp::CDriveWatchApp()
 	// Place all significant initialization in InitInstance
 }
 
+// Helper function to check if a given path is a system drive (e.g., where Windows is installed)
+static bool IsSystemDrive(LPCWSTR path)
+{
+    WCHAR systemDir[MAX_PATH] = {0};
+    if (GetSystemDirectoryW(systemDir, MAX_PATH) == 0)
+        return false;
+
+    // Get the root of the system directory (e.g., "C:\")
+    WCHAR systemDrive[MAX_PATH] = {0};
+    wcsncpy_s(systemDrive, systemDir, 3);
+
+    // Get the root of the input path (e.g., "C:\")
+    WCHAR inputDrive[MAX_PATH] = {0};
+    wcsncpy_s(inputDrive, path, 3);
+
+    return _wcsicmp(systemDrive, inputDrive) == 0;
+}
 
 // The one and only CDriveWatchApp object
 
 CDriveWatchApp theApp;
 
+BOOL doLanuchIf(const std::wstring& strLaunchIf, BOOL bSystem = FALSE)
+{
+	if (strLaunchIf.empty())
+		return TRUE;
+
+	enum class LAUNCH_IF_INEQUALITY {
+		UNINITIALIZED,
+		LESS,
+		GREATER,
+	} iniequality = LAUNCH_IF_INEQUALITY::UNINITIALIZED;
+
+	// find first letter
+	switch (strLaunchIf[0])
+	{
+	case L'<':
+		iniequality = LAUNCH_IF_INEQUALITY::LESS;
+		break;
+	case L'>':
+		iniequality = LAUNCH_IF_INEQUALITY::GREATER;
+		break;
+	default:
+		AfxMessageBox(I18N(L"First letter of the argument of '--launch-if' must be '<' or '>'."));
+		return FALSE;
+	}
+
+	std::wstring arg = strLaunchIf.substr(1);
+	if (arg.empty())
+	{
+		AfxMessageBox(I18N(L"The argument of '--launch-if' is empty."));
+		return FALSE;
+	}
+	int nSign;
+	int64_t threadhold;
+	stdGetUnittedSize(arg, &nSign, &threadhold);// stdFromString<int64_t>(arg.c_str());
+	if (threadhold < 0)
+	{
+		AfxMessageBox(I18N(L"The argument of '--launch-if' is minus."));
+		return FALSE;
+	}
+
+	auto fnDecideLaunch = [&]() {
+		do {
+			std::vector<VolumeInfo> volumes;
+			GetVolumeInfo(&volumes);
+			for (auto&& volume : volumes)
+			{
+				if (volume.paths.empty())
+					continue;
+				ULARGE_INTEGER userFreeSpace;
+				ULARGE_INTEGER userTotal;
+				ULARGE_INTEGER freeSpace;
+
+				if(bSystem && !IsSystemDrive(volume.paths[0].c_str()))
+					continue;
+
+				if (GetDiskFreeSpaceEx(volume.paths[0].c_str(),
+					&userFreeSpace,
+					&userTotal,
+					&freeSpace))
+				{
+					switch (iniequality)
+					{
+					case LAUNCH_IF_INEQUALITY::LESS:
+						if (freeSpace.QuadPart < (ULONGLONG)threadhold)
+						{
+							// Go launch
+							return TRUE;
+						}
+						continue;
+
+					case LAUNCH_IF_INEQUALITY::GREATER:
+						if (freeSpace.QuadPart > (ULONGLONG)threadhold)
+						{
+							// Go launch
+							return TRUE;
+						}
+						continue;
+					default:
+						ASSERT(false);
+					}
+				}
+			}
+			return FALSE;
+		} while (false);
+		};
+
+	if (!fnDecideLaunch())
+		return FALSE;
+
+	return TRUE;
+}
 
 // CDriveWatchApp initialization
-
 BOOL CDriveWatchApp::InitInstance()
 {
 	if (IsDuplicateInstance(DRIVEWATCH_MUTEX_NAME))
@@ -92,40 +199,47 @@ BOOL CDriveWatchApp::InitInstance()
 
 		bool bHelp = false;
 		std::wstring strLaunchIf;
+		std::wstring strLaunchIfSystem;
 
-		parser.AddOptionRange({ L"-h",L"/h",L"/?",L"--help" },
+		parser.AddOption({ L"-h",L"/h",L"/?",L"--help" },
 			ArgCount::ArgCount_Zero,
 			&bHelp,
 			ArgEncodingFlags_Default,
 			I18N(L"Shows help"));
 
-		parser.AddOption(L"--launch-if",
+		parser.AddOption({ L"--launch-if" },
 			ArgCount::ArgCount_One,
 			&strLaunchIf,
 			ArgEncodingFlags_Default,
 			I18N(L"Start application if the free space is in specified condition met. ex) --launch-if <10G"));
 
-		parser.AddOption(L"--skip-removable",
+		parser.AddOption({ L"--launch-if-system" },
+			ArgCount::ArgCount_One,
+			&strLaunchIfSystem,
+			ArgEncodingFlags_Default,
+			I18N(L"Start application if the system free space is in specified condition met. ex) --launch-if-system <10G"));
+
+		parser.AddOption({ L"--skip-removable" },
 			ArgCount::ArgCount_Zero,
 			&bSkipRemovable,
 			ArgEncodingFlags_Default,
 			I18N(L"Skip Removable Drive"));
-		parser.AddOption(L"--skip-fixed",
+		parser.AddOption({ L"--skip-fixed" },
 			ArgCount::ArgCount_Zero,
 			&bSkipFixed,
 			ArgEncodingFlags_Default,
 			I18N(L"Skip Fixed Drive"));
-		parser.AddOption(L"--skip-remote",
+		parser.AddOption({ L"--skip-remote" },
 			ArgCount::ArgCount_Zero,
 			&bSkipRemote,
 			ArgEncodingFlags_Default,
 			I18N(L"Skip Remote Drive"));
-		parser.AddOption(L"--skip-cdrom",
+		parser.AddOption({ L"--skip-cdrom" },
 			ArgCount::ArgCount_Zero,
 			&bSkipCdrom,
 			ArgEncodingFlags_Default,
 			I18N(L"Skip CDROM"));
-		parser.AddOption(L"--skip-ramdisk",
+		parser.AddOption({ L"--skip-ramdisk" },
 			ArgCount::ArgCount_Zero,
 			&bSkipRamDisk,
 			ArgEncodingFlags_Default,
@@ -156,89 +270,10 @@ BOOL CDriveWatchApp::InitInstance()
 			return FALSE;
 		}
 
-		if (!strLaunchIf.empty())
-		{
-			enum class LAUNCH_IF_INEQUALITY {
-				UNINITIALIZED,
-				LESS,
-				GREATER,
-			} iniequality = LAUNCH_IF_INEQUALITY::UNINITIALIZED;
-
-			// find first letter
-			switch (strLaunchIf[0])
-			{
-			case L'<':
-				iniequality = LAUNCH_IF_INEQUALITY::LESS;
-				break;
-			case L'>':
-				iniequality = LAUNCH_IF_INEQUALITY::GREATER;
-				break;
-			default:
-				AfxMessageBox(I18N(L"First letter of the argument of '--launch-if' must be '<' or '>'."));
-				return FALSE;
-			}
-
-			std::wstring arg = strLaunchIf.substr(1);
-			if (arg.empty())
-			{
-				AfxMessageBox(I18N(L"The argument of '--launch-if' is empty."));
-				return FALSE;
-			}
-			int nSign;
-			int64_t threadhold;
-			stdGetUnittedSize(arg, &nSign, &threadhold);// stdFromString<int64_t>(arg.c_str());
-			if (threadhold < 0)
-			{
-				AfxMessageBox(I18N(L"The argument of '--launch-if' is minus."));
-				return FALSE;
-			}
-
-			auto fnDecideLaunch = [&]() {
-				do {
-					std::vector<VolumeInfo> volumes;
-					GetVolumeInfo(&volumes);
-					for (auto&& volume : volumes)
-					{
-						if (volume.paths.empty())
-							continue;
-						ULARGE_INTEGER userFreeSpace;
-						ULARGE_INTEGER userTotal;
-						ULARGE_INTEGER freeSpace;
-
-						if (GetDiskFreeSpaceEx(volume.paths[0].c_str(),
-							&userFreeSpace,
-							&userTotal,
-							&freeSpace))
-						{
-							switch (iniequality)
-							{
-							case LAUNCH_IF_INEQUALITY::LESS:
-								if (freeSpace.QuadPart < (ULONGLONG)threadhold)
-								{
-									// Go launch
-									return true;
-								}
-								continue;
-
-							case LAUNCH_IF_INEQUALITY::GREATER:
-								if (freeSpace.QuadPart > (ULONGLONG)threadhold)
-								{
-									// Go launch
-									return true;
-								}
-								continue;
-							default:
-								ASSERT(false);
-							}
-						}
-					}
-					return false;
-				} while (false);
-				};
-			
-			if (!fnDecideLaunch())
-				return FALSE;
-		}
+		if (!doLanuchIf(strLaunchIf))
+			return FALSE;
+		if (!doLanuchIf(strLaunchIfSystem, TRUE))
+			return FALSE;
 	}
 
 	CDriveWatchDlg dlg(

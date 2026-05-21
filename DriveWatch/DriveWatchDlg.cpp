@@ -95,7 +95,17 @@ BOOL CDriveWatchDlg::OnInitDialog()
 void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	std::vector<VolumeInfo> volumes;
+
 	GetVolumeInfo(&volumes);
+	
+	// Sort volumes by VolumeInfo.paths[0], treating empty paths as empty string
+	std::sort(volumes.begin(), volumes.end(),
+		[](const VolumeInfo& a, const VolumeInfo& b) {
+			std::wstring pa = a.paths.empty() ? L"" : a.paths[0];
+			std::wstring pb = b.paths.empty() ? L"" : b.paths[0];
+			return pa < pb;
+		});
+
 	vector<wstring> lines;
 	vector<wstring> titles;
 	for (auto&& volume : volumes)
@@ -164,16 +174,16 @@ void CDriveWatchDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 		else
 		{
-			auto percent = (100.0 * userFreeSpace.QuadPart / userTotal.QuadPart);
+			auto percentUsed = 100.0 - (100.0 * userFreeSpace.QuadPart / userTotal.QuadPart);
 			wstringstream wss;
 			wss << FormatSizeof(userFreeSpace.QuadPart) << L" / " <<
 				FormatSizeof(userTotal.QuadPart) << L" (" <<
 				setprecision(3) <<
-				percent << L"% free)";
+				percentUsed << L"% used)";
 			line << wss.str();
 
 			wstringstream wssTitle;
-			wssTitle << setprecision(3) << percent << L"%";
+			wssTitle << setprecision(3) << percentUsed << L"%";
 			title << wssTitle.str();
 		}
 
